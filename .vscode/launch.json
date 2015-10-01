@@ -4,7 +4,7 @@
 		{
 			"name": "Launch",
 			"type": "node",
-			"program": "server.js",
+			"program": "server/server.js",
 			"stopOnEntry": false
 		}
 	]
