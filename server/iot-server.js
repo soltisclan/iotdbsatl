@@ -18,8 +18,10 @@ con.connect(function(err){
  });
 
 var server = http.createServer(function (request, response) {
+
+    var html = '<html><body>';
   
-console.dir(request.param);
+    console.dir(request.param);
 
     if (request.method == 'POST') {
         console.log("POST");
@@ -37,24 +39,26 @@ console.dir(request.param);
     else
     {
         console.log("GET");
-        var html = '<html><body>';
-        html += con.query('SELECT * FROM employees',function(err,rows){
-          if(err) throw err;
-	 var row = "";
-          console.log('Data received from Db:' + rows.length);
-	  for (var i = 0; i < rows.length; i++) {
-               console.log(rows[i].name);
-		row += "Row: " + rows[i];
-	  };
-	  return row;
-        });
-        html = html + "</body></html>";
-
-        response.writeHead(200, {'Content-Type': 'text/html'});
-        response.end(html);
-
+	executeQuery(function(rows){
+		console.log("IN ROWS CALLBACK " + rows); 
+		for(var i =0; i<rows.length; i++) {
+			html += rows[i].name + ", ";
+		}        
+  	      	response.writeHead(200, {'Content-Type': 'text/plain'});
+        	response.end(html);
+	});
     }
 });
+
+
+function executeQuery(callback) {
+        console.log("IN executeQuery");
+	con.query('SELECT * FROM employees',function(err,rows){
+          if(err) throw err;
+          console.log("in con.query()"); 
+          return callback(rows);
+        });
+};
 
 // Listen on port 8000, IP defaults to 127.0.0.1
 server.listen(8080);
