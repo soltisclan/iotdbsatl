@@ -1,14 +1,16 @@
+// Load the http module to create an http server.
+var http = require('http');
 var mysql = require("mysql");
+var url = require("url");
 
-// First you need to create a connection to the db
- var con = mysql.createConnection({
+var con = mysql.createConnection({
    host: "dbsiotdb.ctdx7umcipoo.us-west-2.rds.amazonaws.com",
    user: "dbs",
    password: "dbsatlanta",
    database: "iot"
  });
 
- con.connect(function(err){
+con.connect(function(err){
     if(err){
          console.log('Error ' + err);
          return;
@@ -16,15 +18,42 @@ var mysql = require("mysql");
     console.log('Connection established');
  });
 
-con.query('SELECT * FROM employees',function(err,rows){
-  if(err) throw err;
+var server = http.createServer(function (request, response) {
 
-  console.log('Data received from Db:\n');
-  console.log(rows);
+    var html = '<html><body>';
+  
+    console.dir(request.param);
+
+    var queryObject = url.parse(request.url,true).query;
+    console.log(queryObject);
+
+    if (queryObject['device'] == null) {
+        console.log('Got nothing! ');
+
+	con.query('SELECT * FROM cubestate;',function(err, rows){
+		for(var i =0; i<rows.length; i++) {
+			html += rows[i].name + ", ";
+		}        
+  	      	html += '</BODY></HTML>';
+		response.writeHead(200, {'Content-Type': 'text/plain'});
+        	response.end(html);
+	});
+    }
+    else
+    {
+	var device = queryObject['device'];
+	var state = queryObject['occupied']
+	console.log(device + ', ' + state);
+	con.query('INSERT INTO cubestate (deviceId, occupied, ts) VALUES (' + device + ',' + state + ', now());', function(err, result) {
+		console.log("Err: " + err + ", Res: " + result);
+	});
+	response.writeHead(200, {'Content-Type': 'text/plain'});
+        response.end('<HTML><BODY>Success!</BODY></HTML>');
+    }
 });
 
- con.end(function(err) {
-// The connection is terminated gracefully
- // Ensures all previously enqueued queries are still
- // before sending a COM_QUIT packet to the MySQL server.
-  });
+// Listen on port 8000, IP defaults to 127.0.0.1
+server.listen(8080);
+
+// Put a friendly message on the terminal
+console.log("Server running at http://127.0.0.1:8080/");
