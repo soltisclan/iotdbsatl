@@ -20,7 +20,7 @@ con.connect(function(err){
 
 var server = http.createServer(function (request, response) {
 
-    var html = '<html><body>';
+    var html = '{';
   
     console.dir(request.param);
 
@@ -28,14 +28,12 @@ var server = http.createServer(function (request, response) {
     console.log(queryObject);
 
     if (queryObject['device'] == null) {
-        console.log('Got nothing! ');
-
-	con.query('SELECT * FROM cubestate;',function(err, rows){
+	con.query('SELECT * FROM cubestate limit 1000;',function(err, rows){
 		for(var i =0; i<rows.length; i++) {
-			html += rows[i].name + ", ";
+			html += "{'deviceID':'" + rows[i].deviceID + "','occupied':'" + rows[i].occupied + "','ts':' " +rows[i].ts + "'},\n";
 		}        
-  	      	html += '</BODY></HTML>';
-		response.writeHead(200, {'Content-Type': 'text/plain'});
+  	      	html += '}';
+		response.writeHead(200, {'Content-Type': 'application/json'});
         	response.end(html);
 	});
     }
@@ -47,8 +45,8 @@ var server = http.createServer(function (request, response) {
 	con.query('INSERT INTO cubestate (deviceId, occupied, ts) VALUES (' + device + ',' + state + ', now());', function(err, result) {
 		console.log("Err: " + err + ", Res: " + result);
 	});
-	response.writeHead(200, {'Content-Type': 'text/plain'});
-        response.end('<HTML><BODY>Success!</BODY></HTML>');
+	response.writeHead(200, {'Content-Type': 'application/json'});
+        response.end("{'response':'Success'}");
     }
 });
 
