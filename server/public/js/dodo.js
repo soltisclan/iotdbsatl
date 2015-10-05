@@ -9,7 +9,7 @@ var OfficeList = React.createClass({
           return {
             "name": office.deviceID,
             "description": null,
-            "occupied": office.occupied == 0 ? false : true,
+            "occupied": (office.occupied == 0 || office.occupied == false) ? false : true,
             "lastUpdate": office.ts
           }
         });
@@ -89,13 +89,15 @@ var StatusBubble = React.createClass({
 var StatusDescription = React.createClass({
   render: function() {
     var statusText;
-    var lastUpdate = new Date(this.props.lastUpdate).toLocaleString();
+    var utcTime = new Date(this.props.lastUpdate);
+    var localTime = new Date(utcTime.setMinutes(utcTime.getMinutes() - utcTime.getTimezoneOffset())).toLocaleString();
+
     switch (this.props.occupied) {
       case false:
-        statusText = "Available since " + lastUpdate;
+        statusText = "Available since " + localTime;
         break;
       case true:
-        statusText = "Occupied since " +  lastUpdate;
+        statusText = "Occupied since " +  localTime;
         break;
       default:
         statusText = "Status Unavailable";
