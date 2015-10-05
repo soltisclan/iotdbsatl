@@ -25,7 +25,7 @@ con.connect(function(err){
 
 
 app.get('/api', function(request, response) {
-    var html = '{';
+    // var html = '{';
 
     console.dir(request.param);
 
