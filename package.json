@@ -2,8 +2,8 @@
   "name": "IoTDBSATL",
   "version": "0.1.0",
   "description": "DBS ATL IoT Project",
-  "main": "server/app.js",
+  "main": "server/server.js",
   "scripts": {
-    "start":"node server/app.js"
+    "start":"node server/server.js"
   }
 }
