@@ -42,7 +42,7 @@ var server = http.createServer(function (request, response) {
 	var device = queryObject['device'];
 	var state = queryObject['occupied']
 	console.log(device + ', ' + state);
-	con.query('INSERT INTO cubestate (deviceId, occupied, ts) VALUES (' + device + ',' + state + ', now());', function(err, result) {
+	con.query('INSERT INTO cubestate (deviceId, occupied, ts) VALUES (' + con.escape(device) + ',' + con.escape(state) + ', now());', function(err, result) {
 		console.log("Err: " + err + ", Res: " + result);
 	});
 	response.writeHead(200, {'Content-Type': 'application/json'});
