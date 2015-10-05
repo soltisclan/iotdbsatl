@@ -1,7 +1,12 @@
-// Load the http module to create an http server.
-var http = require('http');
+var express = require('express');
 var mysql = require("mysql");
+var path = require('path');
 var url = require("url");
+
+var app = express();
+
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 var con = mysql.createConnection({
    host: "dbsiotdb.ctdx7umcipoo.us-west-2.rds.amazonaws.com",
@@ -18,10 +23,10 @@ con.connect(function(err){
     console.log('Connection established');
  });
 
-var server = http.createServer(function (request, response) {
 
+app.get('/api', function(request, response) {
     var html = '{';
-  
+
     console.dir(request.param);
 
     var queryObject = url.parse(request.url,true).query;
@@ -29,12 +34,14 @@ var server = http.createServer(function (request, response) {
 
     if (queryObject['device'] == null) {
 	con.query('SELECT * FROM cubestate limit 1000;',function(err, rows){
-		for(var i =0; i<rows.length; i++) {
-			html += "{'deviceID':'" + rows[i].deviceID + "','occupied':'" + rows[i].occupied + "','ts':' " +rows[i].ts + "'},\n";
-		}        
-  	      	html += '}';
-		response.writeHead(200, {'Content-Type': 'application/json'});
-        	response.end(html);
+		// for(var i =0; i<rows.length; i++) {
+		// 	html += "{'deviceID':'" + rows[i].deviceID + "','occupied':'" + rows[i].occupied + "','ts':' " +rows[i].ts + "'},\n";
+		// }
+  	//       	html += '}';
+		// response.writeHead(200, {'Content-Type': 'application/json'});
+    //     	response.end(html);
+    response.setHeader('Cache-Control', 'no-cache');
+    response.json(rows);
 	});
     }
     else
@@ -50,8 +57,4 @@ var server = http.createServer(function (request, response) {
     }
 });
 
-// Listen on port 8000, IP defaults to 127.0.0.1
-server.listen(8080);
-
-// Put a friendly message on the terminal
-console.log("Server running at http://127.0.0.1:8080/");
+module.exports = app;
