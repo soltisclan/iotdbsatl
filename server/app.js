@@ -1,7 +1,12 @@
-// Load the http module to create an http server.
-var http = require('http');
-var mysql = require("mysql");
-var url = require("url");
+var express = require('express'),
+    mysql = require("mysql"),
+    path = require("path"),
+    url = require("url");
+
+var app = express();
+
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 var con = mysql.createConnection({
    host: "dbsiotdb.ctdx7umcipoo.us-west-2.rds.amazonaws.com",
@@ -18,16 +23,23 @@ con.connect(function(err){
     console.log('Connection established');
  });
 
-var server = http.createServer(function (request, response) {
 
+app.get('/api', function(request, response) {
+    // var html = '{';
     var queryObject = url.parse(request.url,true).query;
-    console.log("Query: " + queryObject);
-    console.log("Params: " + JSON.stringify(request.param,null,"\t"));
-
+    console.log("Query: " + JSON.stringify(queryObject, null, "\t"));
+    console.log("Params: " + JSON.stringify(request.param, null, "\t"));
+    
     if (queryObject.device == null) {
 	con.query('SELECT * FROM cubestate limit 1000;',function(err, rows){
-		response.writeHead(200, {'Content-Type': 'application/json'});
-        response.end(JSON.stringify(rows, null, "\t"));
+		// for(var i =0; i<rows.length; i++) {
+		// 	html += "{'deviceID':'" + rows[i].deviceID + "','occupied':'" + rows[i].occupied + "','ts':' " +rows[i].ts + "'},\n";
+		// }
+  	//       	html += '}';
+		// response.writeHead(200, {'Content-Type': 'application/json'});
+    //     	response.end(html);
+    response.setHeader('Cache-Control', 'no-cache');
+    response.json(rows);
 	});
     }
     else
@@ -35,15 +47,12 @@ var server = http.createServer(function (request, response) {
 	var device = queryObject.device;
 	var state = queryObject.occupied;
 	console.log(device + ', ' + state);
-	con.query('INSERT INTO cubestate (deviceId, occupied, ts) VALUES (' + con.escape(device) + ',' + con.escape(state) + ', now());', function(err, result) {
+	con.query('INSERT INTO cubestate (deviceId, occupied, ts) VALUES (' + device + ',' + state + ', now());', function(err, result) {
 		console.log("Err: " + err + ", Res: " + result);
 	});
 	response.writeHead(200, {'Content-Type': 'application/json'});
-    response.end("{'response':'Success'}");
+        response.end("{'response':'Success'}");
     }
 });
 
-server.listen(process.env.PORT || 8080);
-
-// Put a friendly message on the terminal
-console.log("Server is running on port " + (process.env.PORT || 8080));
+module.exports = app;
