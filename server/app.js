@@ -9,11 +9,11 @@ app.use(express.static(path.join(__dirname, '../client')));
 
 
 var con = mysql.createConnection({
-   host: "dbsiotdb.ctdx7umcipoo.us-west-2.rds.amazonaws.com",
-   user: "dbs",
-   password: "dbsatlanta",
-   database: "iot"
- });
+        host: process.env.MYSQL_HOST,
+        user: process.env.USER,
+        password: process.env.PASSWORD,
+        database: process.env.DATABASE
+    });
 
 con.connect(function(err){
     if(err){
