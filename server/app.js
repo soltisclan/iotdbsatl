@@ -5,7 +5,7 @@ var express = require('express'),
     Loki = require('lokijs');
 
 var app = express();
-var db = new Loki('./db/storage.json'), statuses;
+var db = new Loki('../db/storage.json'), statuses;
 
 db.loadDatabase({},function(){
 	statuses = db.getCollection('statuses');
