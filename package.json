@@ -4,7 +4,7 @@
   "description": "Web UI and REST API for Daugherty Open Desk",
   "main": "server/server.js",
   "scripts": {
-    "start":"node server/server.js",
+    "start": "node server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Soltis, Andrew (ATL) <Andrew.Soltis@daugherty.com>",
@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "express": "^4.13.3",
+    "lokijs": "^1.3.10",
     "mysql": "^2.9.0"
   }
 }
