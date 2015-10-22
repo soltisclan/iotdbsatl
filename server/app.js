@@ -57,6 +57,29 @@ app.get('/apix', function(request, response){
 
 
 
+app.get('/test', function(request, response){
+    console.log('Version - ' + process.version);
+    var d = new Date();
+
+    var st = [{ deviceID: 1, ts: d.setDate(d.getDate() -1 ), occupied: 1 }, { deviceID: 1, ts: d.setDate(d.getDate() + 1), occupied: 0 }, { deviceID: 2, ts: d.setDate(d.getDate() + 0), occupied: 1 }];
+    
+    var dist = st.reduce(function (memo, status) {
+
+        var ind = memo.indexOf(memo.find(function (el) { return (el.deviceID === status.deviceID); }));
+
+        if (ind >= 0) {
+            if (memo[ind].ts < status.ts) {
+                memo[ind] = status;
+            }
+        } else {
+            memo.push(status);
+        }
+        return memo;
+    }, []);
+    
+    response.json(dist);
+});
+
 var con = mysql.createConnection({
         host: process.env.MYSQL_HOST,
         user: process.env.MYSQL_USER,
