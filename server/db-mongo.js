@@ -8,6 +8,10 @@ db.getHistory = function(size, offset) {
   return [];
 }
 
+db.getUsage = function(from, to) {
+  return {};
+}
+
 db.upsertStatus = function(deviceId, isOccupied) {
 }
 

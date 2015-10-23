@@ -21,6 +21,11 @@ db.getHistory = function(size, offset) {
   return statusHistory.chain().simplesort('$loki', true).offset(offset).limit(size).data();
 }
 
+db.getUsage = function(from, to) {
+  var statusHistory = loki.getCollection('statusHistory');
+  return statusHistory.mapReduce(mapOccupiedTime, reduceOccupiedTime);
+}
+
 db.upsertStatus = function(deviceId, isOccupied) {
   var devices = loki.getCollection('currentStatus');
   var device = devices.findOne({'deviceId' : deviceId});
@@ -67,6 +72,29 @@ function insertHistory(deviceId, isOccupied) {
     timeSince: timeSince
   };
   statusHistory.insert(historyEntry);
+}
+
+function mapOccupiedTime(obj){
+  // TODO: This does not count the seats that are currently occupied
+  if (obj.isOccupied == false) {
+    return { deviceId: obj.deviceId, timeSince: obj.timeSince };
+  }
+}
+
+function reduceOccupiedTime(mappedArray) {
+  var occupiedTimes = {};
+  for (var i in mappedArray) {
+    if(mappedArray[i] != null) {
+      if(!(mappedArray[i].deviceId in occupiedTimes) ) {
+        occupiedTimes[mappedArray[i].deviceId] = mappedArray[i].timeSince / (1000 * 60);
+      }
+      else {
+        occupiedTimes[mappedArray[i].deviceId] += mappedArray[i].timeSince / (1000 * 60)
+      }
+    }
+  }
+
+  return occupiedTimes;
 }
 
 // If any of the collections we need does not exist in the database,

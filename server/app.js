@@ -35,15 +35,26 @@ app.get('/api', function(request, response){
 });
 
 app.get('/api/history', function(request, response) {
-  // size: number of results to limit results to
-  // offset: starting position to return results of
   //console.log('GET /api/history with parameters ' + JSON.stringify(request.query));
 
+  // size: number of results to limit results to
+  // offset: starting position to return results of
   var size = request.query.size || 100;
   var offset = request.query.offset || 0;
 
   response.setHeader('Cache-Control', 'no-cache');
   response.json(db.getHistory(size, offset));
+});
+
+app.get('/api/usage', function(request, response) {
+  //console.log('GET /api/usage with parameters ' + JSON.stringify(request.query));
+
+  // from & to represent the time range of the data
+  var from = request.query.from || 100;
+  var to = request.query.to || 0;
+
+  response.setHeader('Cache-Control', 'no-cache');
+  response.json(db.getUsage(from, to));
 });
 
 module.exports = app;
