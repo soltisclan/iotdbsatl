@@ -1,3 +1,18 @@
+import $ from 'jquery'
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { Router, Route, Link } from 'react-router'
+import ClassNames from 'classnames'
+import { Treemap } from 'react-d3';
+
+var Dodo = React.createClass({
+  render: function () {
+    return (
+      <OfficeList url="/api" pollInterval={10000}/>
+    );
+  }
+});
+
 var OfficeList = React.createClass({
   loadOfficeStatus: function() {
     $.ajax({
@@ -36,9 +51,15 @@ var OfficeList = React.createClass({
       errorMessage: ''
     };
   },
+  componentWillMount: function() {
+    this.intervals = [];
+  },
   componentDidMount: function() {
     this.loadOfficeStatus();
-    setInterval(this.loadOfficeStatus, this.props.pollInterval);
+    this.intervals.push(setInterval(this.loadOfficeStatus, this.props.pollInterval));
+  },
+  componentWillUnmount: function() {
+    this.intervals.forEach(clearInterval);
   },
   render: function() {
     var offices = this.state.data.map(function (office) {
@@ -73,7 +94,7 @@ var StatusTile = React.createClass({
 
 var StatusBubble = React.createClass({
   render: function() {
-    var classes = classNames({
+    var classes = ClassNames({
       'status-bubble': true,
       'available': this.props.occupied == false,
       'occupied': this.props.occupied == true
@@ -103,7 +124,7 @@ var StatusDescription = React.createClass({
         statusText = "Status Unavailable";
         break;
     }
-    var statusClasses = classNames({
+    var statusClasses = ClassNames({
       'office-status': true,
       'available': this.props.occupied == false,
       'occupied': this.props.occupied == true
@@ -122,7 +143,54 @@ var ErrorMessage = React.createClass({
   }
 });
 
-React.render(
-  <OfficeList url="/api" pollInterval={10000}/>,
-  document.getElementById('content')
-);
+var Stats = React.createClass({
+  loadOfficeStats: function() {
+    $.ajax({
+      url: '/api/usage',
+      dataType: 'json',
+      cache: false,
+      success: function(data) {
+        var statsArray = [];
+        $.each(data, function(key, value) {
+          statsArray.push({ label: key, value: value })
+        });
+        this.setState({'treemapData': statsArray});
+        this.setState({hasErrors: false});
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error('/api/usage', status, err.toString());
+        this.setState({errorMessage: "Unable to connect to server"});
+        this.setState({hasErrors: true});
+      }.bind(this)
+    });
+  },
+  getInitialState: function() {
+    return {
+      treemapData: []
+    };
+  },
+  componentDidMount: function() {
+    this.loadOfficeStats();
+  },
+  render: function() {
+    return (
+      <div>
+        { this.state.hasErrors ? <ErrorMessage message={this.state.errorMessage} /> : null }
+        <Treemap
+          data={this.state.treemapData}
+          width={640}
+          height={480}
+          textColor="#484848"
+          fontSize="12px"
+          title="Heat Map"
+          hoverAnimation={false}/>
+      </div>
+    )}
+  });
+
+ReactDOM.render((
+  <Router>
+    <Route path="/" component={Dodo} />
+    <Route path="stats" component={Stats} />
+  </Router>
+), document.getElementById('content'));

@@ -110,8 +110,8 @@ function initializeDb() {
     }
   }
   loki.saveDatabase(function() {
-    console.log('DB initialized');
-    console.log(loki.listCollections());
+    //console.log('DB initialized');
+    //console.log(loki.listCollections());
   });
 }
 
