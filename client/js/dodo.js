@@ -1,3 +1,17 @@
+import $ from 'jquery'
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { Router, Route, Link } from 'react-router'
+import ClassNames from 'classnames'
+
+var Dodo = React.createClass({
+  render: function () {
+    return (
+      <OfficeList url="/api" pollInterval={10000}/>
+    );
+  }
+});
+
 var OfficeList = React.createClass({
   loadOfficeStatus: function() {
     $.ajax({
@@ -73,7 +87,7 @@ var StatusTile = React.createClass({
 
 var StatusBubble = React.createClass({
   render: function() {
-    var classes = classNames({
+    var classes = ClassNames({
       'status-bubble': true,
       'available': this.props.occupied == false,
       'occupied': this.props.occupied == true
@@ -103,7 +117,7 @@ var StatusDescription = React.createClass({
         statusText = "Status Unavailable";
         break;
     }
-    var statusClasses = classNames({
+    var statusClasses = ClassNames({
       'office-status': true,
       'available': this.props.occupied == false,
       'occupied': this.props.occupied == true
@@ -122,7 +136,16 @@ var ErrorMessage = React.createClass({
   }
 });
 
-React.render(
-  <OfficeList url="/api" pollInterval={10000}/>,
-  document.getElementById('content')
-);
+var Stats = React.createClass({
+  render: function() {
+    return (
+      <h1>Stats</h1>
+    );}
+});
+
+ReactDOM.render((
+  <Router>
+    <Route path="/" component={Dodo} />
+    <Route path="stats" component={Stats} />
+  </Router>
+), document.getElementById('content'));
