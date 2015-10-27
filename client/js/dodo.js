@@ -7,10 +7,10 @@ var OfficeList = React.createClass({
       success: function(data) {
         var offices = data.map(function (office) {
           return {
-            "name": office.deviceID,
+            "name": office.deviceId,
             "description": null,
-            "occupied": (office.occupied == 0 || office.occupied == false) ? false : true,
-            "lastUpdate": office.ts
+            "occupied": (office.isOccupied == 0 || office.isOccupied == false) ? false : true,
+            "lastUpdate": office.timestamp
           }
         });
         offices.sort(function (a, b) {
