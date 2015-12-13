@@ -1,9 +1,9 @@
 var path = require("path"),
-  Loki = require('lokijs'),
-  loki = new Loki(__dirname + '/../db/statuses.json', {
-    autoload: true,
-    autoloadCallback: initializeDb
-  });
+    Loki = require('lokijs'),
+    loki = new Loki(__dirname + '/../db/statuses.json', {
+      autoload: true,
+      autoloadCallback: initializeDb
+    });
 
 var db = {};
 
@@ -26,7 +26,7 @@ db.getUsage = function(from, to) {
   return statusHistory.mapReduce(mapOccupiedTime, reduceOccupiedTime);
 }
 
-db.upsertStatus = function(deviceId, isOccupied) {
+db.upsertStatus = function(deviceId, isOccupied, name) {
   var devices = loki.getCollection('currentStatus');
   var device = devices.findOne({'deviceId' : deviceId});
   if(device == null) {
@@ -34,16 +34,18 @@ db.upsertStatus = function(deviceId, isOccupied) {
     var newDevice = {
       deviceId: deviceId,
       isOccupied: isOccupied,
-      timestamp: new Date()
+      timestamp: new Date(),
+      name: name
     };
     devices.insert(newDevice);
     console.log('Inserted ' + JSON.stringify(newDevice));
   }
   else {
     // Update
+    device.name = name;
     device.isOccupied = isOccupied;
     device.timestamp = new Date();
-    console.log('Updated status of ' + deviceId + ' to ' + isOccupied);
+    console.log('Updated status of ' + deviceId + ' to ' + isOccupied + ' Changed name to : ' + name);
   }
 
   insertHistory(deviceId, isOccupied);
@@ -103,8 +105,8 @@ function initializeDb() {
   var collections = ['currentStatus', 'statusHistory'];
   for (var i in collections) {
     if(loki.listCollections().filter(function(dbCollection) {
-      return dbCollection.name == collections[i];
-    }).length == 0) {
+          return dbCollection.name == collections[i];
+        }).length == 0) {
       loki.addCollection(collections[i]);
       console.log('Created collection ' + collections[i]);
     }

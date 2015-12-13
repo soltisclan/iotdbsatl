@@ -23,14 +23,14 @@ app.get('/api', function(request, response){
     response.json(db.getCurrentStatus(size, offset).map(function(obj) {
       return {
         deviceId: obj.deviceId,
+        name: obj.name,
         isOccupied: obj.isOccupied,
-        name: obj.hame,
         timestamp: obj.timestamp
       }
     }));
   }
   else {
-    db.upsertStatus(request.query.device, request.query.name, request.query.occupied == true);
+    db.upsertStatus(request.query.device, request.query.occupied == true, request.query.name);
     response.sendStatus(200);
   }
 });

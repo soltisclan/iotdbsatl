@@ -8,7 +8,7 @@ import { Treemap } from 'react-d3';
 var Dodo = React.createClass({
   render: function () {
     return (
-      <OfficeList url="/api" pollInterval={10000}/>
+        <OfficeList url="/api" pollInterval={10000}/>
     );
   }
 });
@@ -22,7 +22,7 @@ var OfficeList = React.createClass({
       success: function(data) {
         var offices = data.map(function (office) {
           return {
-            "name": office.deviceId,
+            "name": office.name,
             "description": null,
             "occupied": (office.isOccupied == 0 || office.isOccupied == false) ? false : true,
             "lastUpdate": office.timestamp
@@ -64,18 +64,18 @@ var OfficeList = React.createClass({
   render: function() {
     var offices = this.state.data.map(function (office) {
       return (
-        <div className="col-xs-6 col-sm-3" key={office.name}>
-          <StatusTile data={office}/>
-        </div>
+          <div className="col-xs-6 col-sm-3" key={office.name}>
+            <StatusTile data={office}/>
+          </div>
       );
     });
     return (
-      <div className="officeList">
-        { this.state.hasErrors ? <ErrorMessage message={this.state.errorMessage} /> : null }
+        <div className="officeList">
+          { this.state.hasErrors ? <ErrorMessage message={this.state.errorMessage} /> : null }
         <div className="row">
           {offices}
         </div>
-      </div>
+        </div>
     );
   }
 });
@@ -83,11 +83,11 @@ var OfficeList = React.createClass({
 var StatusTile = React.createClass({
   render: function() {
     return (
-      <div className="status-tile">
-        <StatusBubble name={this.props.data.name} occupied={this.props.data.occupied} />
-        <div className="office-description">{this.props.data.description}</div>
-        <StatusDescription occupied={this.props.data.occupied} lastUpdate={this.props.data.lastUpdate}/>
-      </div>
+        <div className="status-tile">
+          <StatusBubble name={this.props.data.name} occupied={this.props.data.occupied} />
+          <div className="office-description">{this.props.data.description}</div>
+          <StatusDescription occupied={this.props.data.occupied} lastUpdate={this.props.data.lastUpdate}/>
+        </div>
     );
   }
 });
@@ -100,9 +100,9 @@ var StatusBubble = React.createClass({
       'occupied': this.props.occupied == true
     });
     return (
-      <div className={classes}>
-      <div className="office-name">{this.props.name}</div>
-      </div>
+        <div className={classes}>
+        <div className="office-name">{this.props.name}</div>
+    </div>
     );
   }
 });
@@ -130,7 +130,7 @@ var StatusDescription = React.createClass({
       'occupied': this.props.occupied == true
     });
     return (
-      <div className={statusClasses}>{statusText}</div>
+        <div className={statusClasses}>{statusText}</div>
     );
   }
 });
@@ -138,7 +138,7 @@ var StatusDescription = React.createClass({
 var ErrorMessage = React.createClass({
   render: function() {
     return (
-      <div className="ErrorMessage alert alert-danger">{this.props.message}</div>
+        <div className="ErrorMessage alert alert-danger">{this.props.message}</div>
     );
   }
 });
@@ -174,23 +174,23 @@ var Stats = React.createClass({
   },
   render: function() {
     return (
-      <div>
-        { this.state.hasErrors ? <ErrorMessage message={this.state.errorMessage} /> : null }
-        <Treemap
-          data={this.state.treemapData}
-          width={640}
-          height={480}
-          textColor="#484848"
-          fontSize="12px"
-          title="Heat Map"
-          hoverAnimation={false}/>
-      </div>
+    <div>
+    { this.state.hasErrors ? <ErrorMessage message={this.state.errorMessage} /> : null }
+    <Treemap
+    data={this.state.treemapData}
+    width={640}
+    height={480}
+    textColor="#484848"
+    fontSize="12px"
+    title="Heat Map"
+    hoverAnimation={false}/>
+        </div>
     )}
-  });
+});
 
 ReactDOM.render((
-  <Router>
+    <Router>
     <Route path="/" component={Dodo} />
     <Route path="stats" component={Stats} />
-  </Router>
+    </Router>
 ), document.getElementById('content'));
