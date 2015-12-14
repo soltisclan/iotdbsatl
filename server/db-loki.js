@@ -42,7 +42,7 @@ db.upsertStatus = function(deviceId, isOccupied, name) {
   }
   else {
     // Update
-    device.name = name;
+    if (name != undefined && name != '') device.name = name;
     device.isOccupied = isOccupied;
     device.timestamp = new Date();
     console.log('Updated status of ' + deviceId + ' to ' + isOccupied + ' Changed name to : ' + name);

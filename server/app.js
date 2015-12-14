@@ -24,13 +24,15 @@ app.get('/api', function(request, response){
       return {
         deviceId: obj.deviceId,
         isOccupied: obj.isOccupied,
-        name: obj.name,
+        name: (obj.name != null && obj.name != '') ? obj.name : obj.deviceId,
         timestamp: obj.timestamp
       }
     }));
   }
   else {
-    db.upsertStatus(request.query.device, request.query.occupied == true, request.query.name);
+    var name;
+    if (request.query.name != null) name = request.query.name;
+    db.upsertStatus(request.query.device, request.query.occupied, name);
     response.sendStatus(200);
   }
 });
