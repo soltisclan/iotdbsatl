@@ -24,13 +24,12 @@ app.get('/api', function(request, response){
       return {
         deviceId: obj.deviceId,
         isOccupied: obj.isOccupied,
-        name: obj.hame,
         timestamp: obj.timestamp
       }
     }));
   }
   else {
-    db.upsertStatus(request.query.device, request.query.name, request.query.occupied == true);
+    db.upsertStatus(request.query.device, request.query.occupied == true);
     response.sendStatus(200);
   }
 });
