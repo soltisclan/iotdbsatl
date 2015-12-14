@@ -24,7 +24,7 @@ app.get('/api', function(request, response){
       return {
         deviceId: obj.deviceId,
         isOccupied: obj.isOccupied,
-        name: obj.hame,
+        name: obj.name,
         timestamp: obj.timestamp
       }
     }));
