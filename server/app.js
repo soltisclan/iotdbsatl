@@ -23,8 +23,8 @@ app.get('/api', function(request, response){
     response.json(db.getCurrentStatus(size, offset).map(function(obj) {
       return {
         deviceId: obj.deviceId,
-        name: obj.name,
         isOccupied: obj.isOccupied,
+        name: obj.hame,
         timestamp: obj.timestamp
       }
     }));
