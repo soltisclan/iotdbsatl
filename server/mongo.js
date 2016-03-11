@@ -14,43 +14,18 @@ MongoClient.connect(url, function (err, db) {
   } else {
     //HURRAY!! We are connected. :)
     console.log('Connection established to', url);
+
+    // do some work here with the database.
+    var collection = db.collection('currentStatus');
+
+    var cursor = collection.find({});
+
+    cursor.each(function(err, doc) {
+    	if (err) {
+    		console.log(err);
+    	} else {
+    		console.log('Fetched:', doc);
+    	}
+    })
   }
 });
-
-var db = {};
-
-db.getCurrentStatus = function(size, offset) {
-			
-	var statie = new Array();
-
-	find(db, function(err, doc) {
-		if(err) {
-
-		} else {
-			console.log("DOC: " + doc);
-		}
-	})	
-}
-
-db.getHistory = function(size, offset) {
-  return [];
-}
-
-db.getUsage = function(from, to) {
-  return {};
-}
-
-db.upsertStatus = function(deviceId, isOccupied) {
-}
-
-module.exports = db;
-
-var find = function (db, callback) {
-	db.collection("currentStatus").find({}, function(err, doc){
-		if(err) {
-			callback(err);
-		} else {
-			callback(null, doc);
-		}
-	})
-}

@@ -1,6 +1,6 @@
 var express = require('express'),
     path = require("path"),
-    db = require('./db-loki.js'),
+    db = require('./db-mongo.js'),
     app = express();
 
 app.use(express.static(path.join(__dirname, '../client')));
