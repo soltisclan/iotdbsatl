@@ -20,14 +20,7 @@ app.get('/api', function(request, response){
     var offset = request.query.offset || 0;
 
     response.setHeader('Cache-Control', 'no-cache');
-    response.json(db.getCurrentStatus(size, offset).map(function(obj) {
-      return {
-        deviceId: obj.deviceId,
-        isOccupied: obj.isOccupied,
-        name: (obj.name != null && obj.name != '') ? obj.name : obj.deviceId,
-        timestamp: obj.timestamp
-      }
-    }));
+    response.json(db.getCurrentStatus(size, offset).map(a(obj)));
   }
   else {
     var name;
@@ -36,6 +29,15 @@ app.get('/api', function(request, response){
     response.sendStatus(200);
   }
 });
+
+function a(obj) {
+  return {
+    deviceId: obj.deviceId,
+    isOccupied: obj.isOccupied,
+    name: (obj.name != null && obj.name != '') ? obj.name : obj.deviceId,
+    timestamp: obj.timestamp
+  };
+}
 
 app.get('/api/history', function(request, response) {
   //console.log('GET /api/history with parameters ' + JSON.stringify(request.query));

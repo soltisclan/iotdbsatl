@@ -19,17 +19,26 @@ MongoClient.connect(url, function (err, db) {
 
 var db = {};
 
-db.getCurrentStatus = function(size, offset) {
+db.getCurrentStatus = function(size, offset, callback) {
 			
 	var statie = new Array();
-
-	find(db, function(err, doc) {
-		if(err) {
-
+	MongoClient.connect(url, function (err, db) {
+		//console.log("Statie: " + statie.toString());
+		if (err) {
+			console.log('Unable to connect to the mongoDB server. Error:', err);
 		} else {
-			console.log("DOC: " + doc);
+			//HURRAY!! We are connected. :)
+			console.log('Connection established to', url);
+
+			// do some work here with the database.
+			var collection = db.collection('currentStatus');
+
+			var cursor = collection.find({});
+
+			callback(null, cursor);
+
 		}
-	})	
+	});	
 }
 
 db.getHistory = function(size, offset) {
@@ -44,13 +53,3 @@ db.upsertStatus = function(deviceId, isOccupied) {
 }
 
 module.exports = db;
-
-var find = function (db, callback) {
-	db.collection("currentStatus").find({}, function(err, doc){
-		if(err) {
-			callback(err);
-		} else {
-			callback(null, doc);
-		}
-	})
-}
