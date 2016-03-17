@@ -36,11 +36,10 @@ db.getCurrentStatus = function(size, offset, callback) {
 			console.log("Before find()");
 			var cursor = collection.find({});
 			
-			cursor.each(function(err, doc) {
-			      if (doc != null) {
-			         callback(null, doc);
-			    }
-			});	
+			var list = cursor.map(function(item) {
+			    return item.id;
+			});
+			callback(null, list);
 			console.log("after find()");
 		}
 	});	

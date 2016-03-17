@@ -19,8 +19,10 @@ app.get('/api', function(request, response){
     var size = request.query.size || 100;
     var offset = request.query.offset || 0;
 
-    response.setHeader('Cache-Control', 'no-cache');
-    response.json(db.getCurrentStatus(size, offset, processRS));
+    db.getCurrentStatus(size, offset, function(err, results) {
+      response.setHeader('Cache-Control', 'no-cache');
+      response.json(results);
+    });
   }
   else {
     var name;
