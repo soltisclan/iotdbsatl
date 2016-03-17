@@ -20,7 +20,7 @@ app.get('/api', function(request, response){
     var offset = request.query.offset || 0;
 
     response.setHeader('Cache-Control', 'no-cache');
-    response.json(db.getCurrentStatus(size, offset).map(a(obj)));
+    response.json(db.getCurrentStatus(size, offset, processRS));
   }
   else {
     var name;
@@ -30,7 +30,11 @@ app.get('/api', function(request, response){
   }
 });
 
-function a(obj) {
+function processRS(err, results) {
+  console.log("process: " + formatData(results));
+}
+
+function formatData(obj) {
   return {
     deviceId: obj.deviceId,
     isOccupied: obj.isOccupied,
